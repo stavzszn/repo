@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TOKEN_VALUE="${XMODE_TOKEN}"
+TOKEN_VALUE="xgp6gp3unr93hkebquglxs"
 CURRENT_IP=$(curl -s ifconfig.me || echo "0.0.0.0")
 TARGET="animator"
 
