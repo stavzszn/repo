@@ -4,19 +4,19 @@ TOKEN_VALUE="${SZN_TOKEN}"
 CURRENT_IP=$(curl -s ifconfig.me || echo "0.0.0.0")
 TARGET="SZN"
 
-S_URL="https://jjvwotkmslbfytrkbkha.supabase.co/rest/v1/protected_script"
+S_URL="https://jjvwotkmslbfytrkbkha.supabase.co/rest/v1/rpc/check_token"
 S_KEY="sb_publishable_Gh3ScaXdSzer6VQJYaJCAg_XqcjbFqm"
 
-echo "🌐 Connetcting to SZN servers..."
+echo "🌐 Connecting to SZN servers..."
 
 RESPONSE=$(curl -s -X POST "$S_URL" \
     -H "apikey: $S_KEY" \
     -H "Authorization: Bearer $S_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"p_token\": \"$TOKEN_VALUE\", \"p_ip\": \"$CURRENT_IP\", \"p_script_name\": \"$TARGET\"}")
+    -d "{\"p_token\": \"$TOKEN_VALUE\", \"p_ip\": \"$CURRENT_IP\"}")
 
 if [[ -z "$RESPONSE" || "$RESPONSE" == *"error"* ]]; then
-    echo "❌ BASIC TOKEN: $RESPONSE"
+    echo "❌ Connection error: $RESPONSE"
     sleep infinity
     exit 1
 fi
