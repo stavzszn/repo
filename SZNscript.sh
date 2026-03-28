@@ -326,12 +326,46 @@ patch_code = f"""
     document.body.appendChild(logo);
   }});
 
-  const overrideLiteGraph = setInterval(() => {{
+const overrideLiteGraph = setInterval(() => {{
       if (window.LiteGraph && window.LGraphCanvas) {{
           window.LGraphCanvas.prototype.showSearchBox = function() {{ return false; }};
           clearInterval(overrideLiteGraph);
       }}
   }}, 500);
+
+  // 4. BLOCK RIGHT CLICK
+  document.addEventListener("contextmenu", e => {{
+      e.preventDefault();
+      e.stopPropagation();
+  }}, true);
+
+  // 5. DEVTOOLS DETECTION
+  (function detectDevTools() {{
+      const threshold = 160;
+      setInterval(() => {{
+          if (
+              window.outerWidth - window.innerWidth > threshold ||
+              window.outerHeight - window.innerHeight > threshold
+          ) {{
+              if (window.app?.graph) {{
+                  window.app.graph.clear();
+              }}
+          }}
+      }}, 1000);
+  }})();
+
+  // 6. DEBUGGER TRAP
+  setInterval(() => {{ debugger; }}, 100);
+
+  // 7. BLOCK WORKFLOW API ENDPOINT
+  const _fetch = window.fetch;
+  window.fetch = function(...args) {{
+      const url = typeof args[0] === "string" ? args[0] : args[0]?.url ?? "";
+      if (url.includes("/api/history") || (url.includes("prompt") && url.includes("GET"))) {{
+          return Promise.resolve(new Response("{{}}", {{ status: 200 }}));
+      }}
+      return _fetch.apply(this, args);
+  }};
 </script>
 """
 
