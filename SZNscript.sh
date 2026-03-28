@@ -13,23 +13,22 @@ COMFYUI_DIR="${WORKSPACE}/ComfyUI"
 echo "=== Starting SZNVAULT installation (Protected) ==="
 
 # === 2. AUTHORIZATION AND LEAK PROTECTION (SUPABASE) ===
-if [ -z "$SZNVAULT_TOKEN" ] || [ "$SZNVAULT_TOKEN" == "INSERT_TOKEN_HERE" ]; then
-    echo "CRITICAL ERROR: You did not set SZNVAULT_TOKEN in your Vast.ai settings!"
+if [ -z "$SZN_TOKEN" ] || [ "$SZN_TOKEN" == "INSERT_TOKEN_HERE" ]; then
+    echo "CRITICAL ERROR: You have not set SZN_TOKEN in your Vast.ai settings!"
     sleep infinity
     exit 1
 fi
 
 PUBLIC_IP=$(curl -s ifconfig.me)
-SUPABASE_URL="https://tzaxkiiohwxcuclfryru.supabase.co/rest/v1/rpc/verify_client_token"
-SUPABASE_KEY="sb_publishable_pNKPlnhllScFgXV3_dA-LA_u5NjNqbT"
+SUPABASE_URL="https://jjvwotkmslbfytrkbkha.supabase.co/functions/v1/check-token"
+SUPABASE_KEY="sb_publishable_Gh3ScaXdSzer6VQJYaJCAg_XqcjbFqm"
 
 RESPONSE=$(curl -s -X POST "$SUPABASE_URL" \
     -H "apikey: $SUPABASE_KEY" \
-    -H "Authorization: Bearer $SUPABASE_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"p_token\": \"${SZNVAULT_TOKEN}\", \"p_ip\": \"${PUBLIC_IP}\"}")
+    -d "{\"p_token\": \"${SZN_TOKEN}\", \"p_vast_id\": \"${PUBLIC_IP}\"}")
 
-if [[ "$RESPONSE" == "true" ]]; then
+if [[ "$RESPONSE" == *"#!/bin/bash"* ]]; then
     echo "=========================================================="
     echo "✅ Your token has been verified by SZNVAULT"
     echo "⏳ Download started, please wait 30-40 minutes..."
@@ -38,13 +37,14 @@ if [[ "$RESPONSE" == "true" ]]; then
 else
     echo "=========================================================="
     echo "❌ ACCESS DENIED: Token is invalid or blocked!"
-    echo "Leak protection may have triggered (IP limit exceeded)."
+    echo "Leak protection may have triggered."
     echo "Script stopped. Contact SZNVAULT"
     echo "sznvault.com or t.me/sznvault"
     echo "=========================================================="
-    sleep infinity 
+    sleep infinity
     exit 1
 fi
+
 
 # === WORKFLOWS , NODES AND MODEL LISTS ===
 WRAPER_ANIMATOR=("https://raw.githubusercontent.com/stavzszn/repo/refs/heads/main/SZN%20WanAnimate%20v1.json")
