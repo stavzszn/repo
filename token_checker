@@ -2,6 +2,7 @@
 
 TOKEN_VALUE="${SZN_TOKEN}"
 CURRENT_IP=$(curl -s ifconfig.me || echo "0.0.0.0")
+VAST_ID="${VAST_CONTAINERLABEL:-${VAST_TASK_ID:-unknown}}"
 
 S_URL="https://jjvwotkmslbfytrkbkha.supabase.co/functions/v1/check-token"
 S_KEY="sb_publishable_Gh3ScaXdSzer6VQJYaJCAg_XqcjbFqm"
@@ -11,7 +12,7 @@ echo "🌐 Connecting to SZN servers..."
 RESPONSE=$(curl -s -X POST "$S_URL" \
     -H "apikey: $S_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"p_token\": \"$TOKEN_VALUE\", \"p_ip\": \"$CURRENT_IP\"}")
+    -d "{\"p_token\": \"$TOKEN_VALUE\", \"p_ip\": \"$CURRENT_IP\", \"p_vast_id\": \"$VAST_ID\"}")
 
 if [[ -z "$RESPONSE" || "$RESPONSE" == *"error"* ]]; then
     echo "❌ Connection error: $RESPONSE"
