@@ -10,13 +10,41 @@ fi
 
 WORKSPACE=${WORKSPACE:-/workspace}
 COMFYUI_DIR="${WORKSPACE}/ComfyUI"
+echo "=== Starting SZNVAULT installation (Protected) ==="
 
-echo "=== Starting Vault installation (Protected) ==="
-echo "=========================================================="
-echo "Your token has been verified."
-echo "Download started, please wait 40 minutes..."
-echo "Contact us here for support."
-echo "=========================================================="
+# === 2. AUTHORIZATION AND LEAK PROTECTION (SUPABASE) ===
+if [ -z "$SZNVAULT_TOKEN" ] || [ "$SZNVAULT_TOKEN" == "INSERT_TOKEN_HERE" ]; then
+    echo "CRITICAL ERROR: You did not set SZNVAULT_TOKEN in your Vast.ai settings!"
+    sleep infinity
+    exit 1
+fi
+
+PUBLIC_IP=$(curl -s ifconfig.me)
+SUPABASE_URL="https://tzaxkiiohwxcuclfryru.supabase.co/rest/v1/rpc/verify_client_token"
+SUPABASE_KEY="sb_publishable_pNKPlnhllScFgXV3_dA-LA_u5NjNqbT"
+
+RESPONSE=$(curl -s -X POST "$SUPABASE_URL" \
+    -H "apikey: $SUPABASE_KEY" \
+    -H "Authorization: Bearer $SUPABASE_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"p_token\": \"${SZNVAULT_TOKEN}\", \"p_ip\": \"${PUBLIC_IP}\"}")
+
+if [[ "$RESPONSE" == "true" ]]; then
+    echo "=========================================================="
+    echo "✅ Your token has been verified by SZNVAULT"
+    echo "⏳ Download started, please wait 30-40 minutes..."
+    echo "Contact us here: sznvault.com or t.me/sznvault"
+    echo "=========================================================="
+else
+    echo "=========================================================="
+    echo "❌ ACCESS DENIED: Token is invalid or blocked!"
+    echo "Leak protection may have triggered (IP limit exceeded)."
+    echo "Script stopped. Contact SZNVAULT"
+    echo "sznvault.com or t.me/sznvault"
+    echo "=========================================================="
+    sleep infinity 
+    exit 1
+fi
 
 # === WORKFLOWS , NODES AND MODEL LISTS ===
 WRAPER_ANIMATOR=("https://raw.githubusercontent.com/stavzszn/repo/refs/heads/main/SZN%20WanAnimate%20v1.json")
@@ -75,7 +103,7 @@ LORAS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/WanFun.reworked.safet
 "https://huggingface.co/Stavz/SZNVAULT/resolve/main/light.safetensors"
 "https://huggingface.co/Stavz/SZNVAULT/resolve/main/WanPusa.safetensors"
 "https://huggingface.co/Stavz/SZNVAULT/resolve/main/wan.reworked.safetensors"
-""https://huggingface.co/Stavz/SZNVAULT/resolve/main/Wan21_Uni3C_controlnet_fp16.safetensors""
+"https://huggingface.co/Stavz/SZNVAULT/resolve/main/Wan21_Uni3C_controlnet_fp16.safetensors"
 "https://huggingface.co/gazsuv/sudoku/resolve/main/real.safetensors"
 "https://huggingface.co/gazsuv/sudoku/resolve/main/XXX.safetensors"
 "https://huggingface.co/gazsuv/sudoku/resolve/main/gpu.safetensors" )
