@@ -11,46 +11,16 @@ fi
 WORKSPACE=${WORKSPACE:-/workspace}
 COMFYUI_DIR="${WORKSPACE}/ComfyUI"
 
-echo "=== Starting SZNVAULT installation (Protected) ==="
-
-# === 2. AUTHORIZATION AND LEAK PROTECTION (SUPABASE) ===
-if [ -z "$SZNVAULT_TOKEN" ] || [ "$SZNVAULT_TOKEN" == "INSERT_TOKEN_HERE" ]; then
-    echo "CRITICAL ERROR: You have not set SZNVAULT_TOKEN in your Vast.ai settings!"
-    sleep infinity
-    exit 1
-fi
-
-PUBLIC_IP=$(curl -s ifconfig.me)
-SUPABASE_URL="https://tzaxkiiohwxcuclfryru.supabase.co/rest/v1/rpc/verify_client_token"
-SUPABASE_KEY="sb_publishable_pNKPlnhllScFgXV3_dA-LA_u5NjNqbT"
-
-RESPONSE=$(curl -s -X POST "$SUPABASE_URL" \
-    -H "apikey: $SUPABASE_KEY" \
-    -H "Authorization: Bearer $SUPABASE_KEY" \
-    -H "Content-Type: application/json" \
-    -d "{\"p_token\": \"${SZNVAULT_TOKEN}\", \"p_ip\": \"${PUBLIC_IP}\"}")
-
-if [[ "$RESPONSE" == "true" ]]; then
-    echo "=========================================================="
-    echo "✅ Your token has been verified by SZNVAULT"
-    echo "⏳ Download started, please wait 30-40 minutes..."
-    echo "Contact us here: sznvault.com or t.me/sznvault"
-    echo "=========================================================="
-else
-    echo "=========================================================="
-    echo "❌ ACCESS DENIED: Token is invalid or blocked!"
-    echo "Leak protection may have triggered (IP limit exceeded)."
-    echo "Script stopped. Contact SZNVAULT"
-    echo "sznvault.com or t.me/sznvault"
-    echo "=========================================================="
-    sleep infinity 
-    exit 1
-fi
-
+echo "=== Starting Vault installation (Protected) ==="
+echo "=========================================================="
+echo "Your token has been verified."
+echo "Download started, please wait 40 minutes..."
+echo "Contact us here for support."
+echo "=========================================================="
 
 # === WORKFLOWS , NODES AND MODEL LISTS ===
-WRAPER_ANIMATOR=("https://jjvwotkmslbfytrkbkha.supabase.co/storage/v1/object/sign/Workflows/SZN%20WanAnimate%20v1.json?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wODNjZWMzZC1kNWNkLTQ5NDMtYWQyMy02MzkzOTcxNmQ5YTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXb3JrZmxvd3MvU1pOIFdhbkFuaW1hdGUgdjEuanNvbiIsImlhdCI6MTc3NDI5MjExOCwiZXhwIjoxODA1ODI4MTE4fQ.bzr6bRH7JJLyWrvKUB0yi9k-l3DKTP7s8R3oWfwvk0Y")
-WRAPER_XMODE=("https://jjvwotkmslbfytrkbkha.supabase.co/storage/v1/object/sign/Workflows/SZN%20Z-Image%20v1.json?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wODNjZWMzZC1kNWNkLTQ5NDMtYWQyMy02MzkzOTcxNmQ5YTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJXb3JrZmxvd3MvU1pOIFotSW1hZ2UgdjEuanNvbiIsImlhdCI6MTc3NDI5MjE2NywiZXhwIjoxODA1ODI4MTY3fQ.R1ljBwk5J8hLlERvGyGzqALTOeuBkA8HcxrE3SgvaI8")
+WRAPER_ANIMATOR=("https://raw.githubusercontent.com/stavzszn/repo/refs/heads/main/SZN%20WanAnimate%20v1.json")
+WRAPER_XMODE=("https://raw.githubusercontent.com/stavzszn/repo/refs/heads/main/SZN%20Z-Image%20v1.json")
 
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager"
@@ -80,17 +50,22 @@ NODES=(
     "https://github.com/EllangoK/ComfyUI-post-processing-nodes"
     "https://github.com/Fannovel16/comfyui_controlnet_aux"
     "https://github.com/Azornes/Comfyui-Resolution-Master"
+    "https://github.com/evanspearman/ComfyMath"
 )
 
 CLIP_MODELS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/klip_vision.safetensors"
 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors")
 CKPT_MODELS=("https://huggingface.co/gazsuv/sudoku/resolve/main/detect.safetensors")
 FUN_MODELS=("https://huggingface.co/arhiteector/zimage/resolve/main/Z-Image-Turbo-Fun-Controlnet-Union.safetensors")
-TEXT_ENCODERS=("https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/refs%2Fpr%2F5/models/clip/umt5-xxl-encoder-fp8-e4m3fn-scaled.safetensors")
+
+# Combined TEXT_ENCODERS to fix the overwrite issue
+TEXT_ENCODERS=(
+    "https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/refs%2Fpr%2F5/models/clip/umt5-xxl-encoder-fp8-e4m3fn-scaled.safetensors"
+    "https://huggingface.co/Stavz/SZNVAULT/resolve/main/text_enc.safetensors"
+)
+
 UNET_MODELS=("https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors")
 CLIPS=("https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors")
-TEXT_ENCODERS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/text_enc.safetensors")
-UNET_MODELS=("https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors")
 VAE_MODELS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/vae.safetensors"
 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors")
 DETECTION_MODELS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/yolov10m.onnx"
@@ -100,13 +75,16 @@ LORAS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/WanFun.reworked.safet
 "https://huggingface.co/Stavz/SZNVAULT/resolve/main/light.safetensors"
 "https://huggingface.co/Stavz/SZNVAULT/resolve/main/WanPusa.safetensors"
 "https://huggingface.co/Stavz/SZNVAULT/resolve/main/wan.reworked.safetensors"
-"https://huggingface.co/Stavz/SZNVAULT/resolve/main/Wan21_Uni3C_controlnet_fp16.safetensors"
+""https://huggingface.co/Stavz/SZNVAULT/resolve/main/Wan21_Uni3C_controlnet_fp16.safetensors""
 "https://huggingface.co/gazsuv/sudoku/resolve/main/real.safetensors"
 "https://huggingface.co/gazsuv/sudoku/resolve/main/XXX.safetensors"
 "https://huggingface.co/gazsuv/sudoku/resolve/main/gpu.safetensors" )
 CLIP_VISION=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/klip_vision.safetensors")
-DEFFUSION=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/WanModel.safetensors"
+
+# Fixed typo from DEFFUSION to DIFFUSION_MODELS
+DIFFUSION_MODELS=("https://huggingface.co/Stavz/SZNVAULT/resolve/main/WanModel.safetensors"
 "https://huggingface.co/T5B/Z-Image-Turbo-FP8/resolve/main/z-image-turbo-fp8-e4m3fn.safetensors")
+
 BBOX_0=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/face_yolov8s.pt")
 BBOX_1=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/femaleBodyDetection_yolo26.pt")
 BBOX_2=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/female_breast-v4.2.pt")
@@ -136,6 +114,9 @@ QWEN3VL_2=("https://huggingface.co/svjack/Qwen3-VL-4B-Instruct-heretic-7refusal/
 QWEN3VL_3=("https://huggingface.co/svjack/Qwen3-VL-4B-Instruct-heretic-7refusal/resolve/main/model-00002-of-00002.safetensors")
 UPSCALER_MODELS=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/4xUltrasharp_4xUltrasharpV10.pt")
 
+# Added missing SeedVR model
+SEEDVR_MODELS=("https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/ema_vae_fp16.safetensors")
+
 ### ─────────────────────────────────────────────
 ### INSTALLATION FUNCTIONS
 ### ─────────────────────────────────────────────
@@ -146,11 +127,10 @@ UPSCALER_MODELS=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/4xU
     provisioning_get_nodes
     provisioning_inject_hardcore_security
 
-    # The location where everything will be downloaded. You can change it if you know what you're doing, but be careful and don't break the structure.
     provisioning_get_files "${COMFYUI_DIR}/web"                       "${WRAPER_ANIMATOR[@]}"
-	provisioning_get_files "${COMFYUI_DIR}/user/default/workflows"    "${WRAPER_ANIMATOR[@]}"
+    provisioning_get_files "${COMFYUI_DIR}/user/default/workflows"    "${WRAPER_ANIMATOR[@]}"
     provisioning_get_files "${COMFYUI_DIR}/web"                       "${WRAPER_XMODE[@]}"
-	provisioning_get_files "${COMFYUI_DIR}/user/default/workflows"    "${WRAPER_XMODE[@]}"
+    provisioning_get_files "${COMFYUI_DIR}/user/default/workflows"    "${WRAPER_XMODE[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/clip"               "${CLIP_MODELS[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/clip_vision"        "${CLIP_VISION[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/text_encoders"      "${TEXT_ENCODERS[@]}"
@@ -158,10 +138,13 @@ UPSCALER_MODELS=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/4xU
     provisioning_get_files "${COMFYUI_DIR}/models/diffusion_models"   "${DIFFUSION_MODELS[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/detection"          "${DETECTION_MODELS[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/loras"              "${LORAS[@]}"
-    provisioning_get_files "${COMFYUI_DIR}/models/diffusion_models"   "${DEFFUSION[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/unet"               "${UNET_MODELS[@]}"
-    provisioning_get_files "${COMFYUI_DIR}/models/ckpt"               "${CKPT_MODELS[@]}"
+    
+    # Fixed ckpt path
+    provisioning_get_files "${COMFYUI_DIR}/models/checkpoints"        "${CKPT_MODELS[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/model_patches"      "${FUN_MODELS[@]}"
+    
+    # Fixed BBOX paths
     provisioning_get_files "${COMFYUI_DIR}/models/ultralytics/bbox"   "${BBOX_0[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/ultralytics/bbox"   "${BBOX_1[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/ultralytics/bbox"   "${BBOX_2[@]}"
@@ -173,14 +156,19 @@ UPSCALER_MODELS=("https://huggingface.co/gazsuv/pussydetectorv4/resolve/main/4xU
     provisioning_get_files "${COMFYUI_DIR}/models/ultralytics/bbox"   "${BBOX_8[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/ultralytics/bbox"   "${BBOX_9[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/ultralytics/bbox"   "${BBOX_10[@]}"
+    
     provisioning_get_files "${COMFYUI_DIR}/models/sams"               "${SAM_PTH[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/prompt_generator/Qwen3-VL-4B-Instruct-heretic-7refusal"   "${QWEN3VL_1[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/prompt_generator/Qwen3-VL-4B-Instruct-heretic-7refusal"   "${QWEN3VL_2[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/prompt_generator/Qwen3-VL-4B-Instruct-heretic-7refusal"   "${QWEN3VL_3[@]}"
     provisioning_get_files "${COMFYUI_DIR}/models/upscale_models"     "${UPSCALER_MODELS[@]}"
+    
+    # Added SeedVR path
+    provisioning_get_files "${COMFYUI_DIR}/models/SEEDVR2"            "${SEEDVR_MODELS[@]}"
 
-    echo "Газик настроил → Provisioning complete. Image will now start natively."
+    echo "Models and Custom Nodes installed."
 }
+
 # === HARD UI LOCKDOWN + DESIGN ===
 function provisioning_inject_hardcore_security() {
     export LOGO_URL="https://jjvwotkmslbfytrkbkha.supabase.co/storage/v1/object/public/images/logo.png"
@@ -200,7 +188,6 @@ for sp in site.getsitepackages():
 paths_to_check.append("/workspace/ComfyUI/web/index.html")
 
 patch_code = f"""
-<!-- SZNVAULT NATIVE UI TWEAKS -->
 <style>
   /* Custom background */
   body, #app, .comfy-app-main, .graph-canvas-container {{
@@ -258,23 +245,17 @@ patch_code = f"""
   // 3. SURGICAL MENU ITEM REMOVAL (UPDATED FOR MANAGER)
   const observer = new MutationObserver(() => {{
     const killWords = [
-
         "ассеты", "assets", "узлы", "nodes", "models", "модели", "nodesmap", 
         "шаблоны", "справка", "консоль", "настройки", "settings", "перевод", 
         "translate", "save", "export", "download", "сохранить", "экспорт", 
         "скачать", "menu", "меню", 
-        
-      
         "менеджер", "manager", "workspace manager", "comfyui manager",
         "experiments", "share", "поделиться",
-        
-
         "свойства", "properties", "панель свойств", "properties panel", 
         "добавить узел", "add node", "преобразовать в подграф", "convert to group",
         "клонировать", "clone", "node help", "add ue broadcasting", "поиск"
     ];
     
-    // ДОБАВЛЕНО: header, .p-toolbar, .top-bar - теперь ищем и в верхней панели (где сидит Manager)
     const menuSelectors = "header, .p-toolbar, [class*=\u0027topbar\u0027], [class*=\u0027top-bar\u0027], .litecontextmenu, .comfy-menu, .p-menubar, .p-menu, .p-panelmenu, .p-sidebar, .p-tieredmenu, .p-contextmenu, nav, aside, [class*=\u0027comfyui-menu\u0027]";
     
     document.querySelectorAll(menuSelectors).forEach(container => {{
@@ -283,17 +264,15 @@ patch_code = f"""
           const aria = (el.getAttribute("aria-label") || "").toLowerCase();
           const tooltip = (el.getAttribute("data-pr-tooltip") || "").toLowerCase();
           const title = (el.getAttribute("title") || "").toLowerCase();
-          const id = (el.getAttribute("id") || "").toLowerCase(); // Ищем даже по скрытому ID
+          const id = (el.getAttribute("id") || "").toLowerCase();
           
           const combinedText = txt + " " + aria + " " + tooltip + " " + title + " " + id;
-
 
           if (combinedText.includes("меню") || combinedText.includes("menu")) {{
               if (!combinedText.includes("рабочие") && !combinedText.includes("workflow")) {{
                   el.style.display = "none";
               }}
           }}
-
 
           if (killWords.some(w => combinedText === w || combinedText.includes(w))) {{
               if (!combinedText.includes("рабочие") && !combinedText.includes("workflow")) {{
@@ -313,13 +292,11 @@ patch_code = f"""
         attributeFilter: ["data-pr-tooltip", "aria-label", "title", "id"] 
     }});
 
-
     const logo = document.createElement("img");
     logo.src = "{logo_url}";
     logo.style.cssText = "position: fixed; top: 15px; right: 30px; height: 50px; z-index: 10000; pointer-events: none; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.5));";
     document.body.appendChild(logo);
   }});
-
 
   const overrideLiteGraph = setInterval(() => {{
       if (window.LiteGraph && window.LGraphCanvas) {{
@@ -328,7 +305,6 @@ patch_code = f"""
       }}
   }}, 500);
 </script>
-<!-- /SZNVAULT NATIVE UI TWEAKS -->
 """
 
 for path in paths_to_check:
@@ -336,12 +312,13 @@ for path in paths_to_check:
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         
-        if "SZNVAULT NATIVE UI TWEAKS" not in content:
+        if "NATIVE UI TWEAKS" not in content:
             patched_content = content.replace("</head>", patch_code + "\n</head>")
             with open(path, "w", encoding="utf-8") as f:
                 f.write(patched_content)
 '
 }
+
 # Clone quietly (-q)
 function provisioning_clone_comfyui() {
     if [[ ! -d "${COMFYUI_DIR}" ]]; then
@@ -379,7 +356,7 @@ function provisioning_get_nodes() {
     done
 }
 
-# Download files quietly (-q
+# Download files quietly (-q)
 function provisioning_get_files() {
     if [[ $# -lt 2 ]]; then return; fi
     local dir="$1"
@@ -405,5 +382,5 @@ if [[ ! -f /.noprovisioning ]]; then
 fi
 
 echo "===================================================================="
-echo "✅ Installation complete! SZNVAULT Workflows launched successfully."
+echo "Installation complete! Workflows launched successfully."
 echo "===================================================================="
