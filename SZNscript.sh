@@ -267,7 +267,7 @@ patch_code = f"""
   window.addEventListener("keydown", e => {{
     if (e.key === "F12") {{ e.preventDefault(); e.stopPropagation(); }}
     if (e.ctrlKey && e.shiftKey && ["I", "J", "C", "i", "j", "c"].includes(e.key)) {{ e.preventDefault(); e.stopPropagation(); }}
-    if (e.ctrlKey && ["u", "U", "s", "S", "c", "C", "v", "V"].includes(e.key)) {{ e.preventDefault(); e.stopPropagation(); }}
+    if (e.ctrlKey && ["u", "U", "s", "S", "c", "C"].includes(e.key)) {{ e.preventDefault(); e.stopPropagation(); }}
   }}, true);
 
   // 3. SURGICAL MENU ITEM REMOVAL (UPDATED FOR MANAGER)
